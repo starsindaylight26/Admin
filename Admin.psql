@@ -1,1 +1,49 @@
+CREATE TABLE users (
+  user_id SERIAL PRIMARY KEY,
+  role VARCHAR(50),
+  phone_number VARCHAR(20),
+  email VARCHAR(100),
+  password VARCHAR(255),
+  full_name VARCHAR(100),
+  status VARCHAR(20),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
+CREATE TABLE product_categories (
+  category_id SERIAL PRIMARY KEY,
+  name VARCHAR(100)
+);
+
+CREATE TABLE admin_profiles (
+  admin_id SERIAL PRIMARY KEY,
+  user_id INT UNIQUE REFERENCES users(user_id),
+  access_level VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE price_caps (
+  price_cap_id SERIAL PRIMARY KEY,
+  category_id INT REFERENCES product_categories(category_id),
+  max_price NUMERIC(10,2),
+  set_by INT REFERENCES admin_profiles(admin_id),
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE audit_logs (
+  log_id SERIAL PRIMARY KEY,
+  admin_id INT REFERENCES admin_profiles(admin_id),
+  action VARCHAR(100),
+  target_table VARCHAR(100),
+  target_id INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE system_reports (
+  report_id SERIAL PRIMARY KEY,
+  type VARCHAR(50),
+  generated_by INT REFERENCES admin_profiles(admin_id),
+  date_range_start DATE,
+  date_range_end DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
